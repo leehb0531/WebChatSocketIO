@@ -23,6 +23,7 @@ html
       #box.box
     script.
       let socket = io();
+      //Listener
       //when click SEND button
       $('#chat').on('submit', function(e){
         socket.emit('send message', $('#name').val(), $('#message').val()); // val() return value of a # input
@@ -34,8 +35,20 @@ html
       socket.on('create name', function(name){
         $('#name').val(name);
       });
+      socket.on('change name', function(oldname,name){
+        $('#chatLog').append('< '+oldname+' changed the name into ' + name + ' >');
+      });
       // when receiving msg
       socket.on('receive message', function(msg){
         $('#chatLog').append(msg+'\n');
         $('#chatLog').scrollTop($('#chatLog')[0].scrollHeight);
       });
+      // when people out
+      socket.on('new_disconnect', function(name){
+        $('#chatLog').append('< "'+name+'" is disconnected'+' >\n');
+      });
+      // when people come
+      socket.on('new_connect', function(name){
+        $('#chatLog').append('< "'+name+'" is connected'+' >\n');
+      });
+      

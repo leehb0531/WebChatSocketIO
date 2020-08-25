@@ -20,13 +20,17 @@ io.on('connection', function(socket){
   socket.name = name;
 
   io.to(socket.id).emit('create name', name);
+  io.emit('new_connect',name);
 
   socket.on('disconnect', function(){
     console.log('user disconnected: ' + socket.id + ' ' + socket.name);
+    io.emit('new_disconnect', socket.name);
   });
 
   socket.on('send message', function(name, text){
     let msg = name + ' : ' + text;
+    if(name != socket.name)
+      io.emit('change name', socket.name, name);
     socket.name = name;
     console.log(msg);
     io.emit('receive message', msg);

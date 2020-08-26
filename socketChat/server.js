@@ -14,17 +14,22 @@ app.get('/', (req, res) => {
 });
 
 let count = 1;
+let people = [];
 io.on('connection', function(socket){
   console.log('user connected: ', socket.id);
   let name = 'unknown' + count++;
   socket.name = name;
 
   io.to(socket.id).emit('create name', name);
+  people.push(name);
   io.emit('new_connect',name);
+  io.emit('list name',name, people);
 
   socket.on('disconnect', function(){
+    people.splice(people.indexOf(name),1);
     console.log('user disconnected: ' + socket.id + ' ' + socket.name);
     io.emit('new_disconnect', socket.name);
+    io.emit('list name',name, people);
   });
 
   socket.on('send message', function(name, text){

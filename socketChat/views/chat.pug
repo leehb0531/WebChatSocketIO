@@ -20,7 +20,11 @@ html
         input#name.form-control(type='text')
         input#message.form-control(type='text')
         button.btn.btn-primary(type='submit') SEND
+      
       #box.box
+      p.form-control(readonly='')
+        | People on this server :
+      p#whoIn
     script.
       let socket = io();
       //Listener
@@ -45,10 +49,18 @@ html
       });
       // when people out
       socket.on('new_disconnect', function(name){
+        $('#whoIn').empty();
         $('#chatLog').append('< "'+name+'" is disconnected'+' >\n');
       });
       // when people come
       socket.on('new_connect', function(name){
+        $('#whoIn').empty();
         $('#chatLog').append('< "'+name+'" is connected'+' >\n');
       });
-      
+      // list up all the users who are on the server.
+      socket.on('list name', function(name, people){
+        let n = people.length;
+        for(let i=0; i<n;i++){
+          $('#whoIn').append(" "+people[i]);
+        };
+      });
